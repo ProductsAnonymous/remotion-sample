@@ -1,22 +1,37 @@
 # AI Skill Tutor — Marketing Reel (Remotion)
 
-A 30-second vertical reel-style video for promoting Halight's **AI Skill Tutor** feature. Built with [Remotion](https://remotion.dev) and `@remotion/transitions`.
+A ~30-second vertical reel-style video for promoting Halight's **AI Skill Tutor** feature.
+Built with [Remotion](https://remotion.dev) v4 and `@remotion/transitions`.
 
 ---
 
-## Quick Start
+## Prerequisites
+
+- **Node.js** ≥ 18 (22 recommended)
+- **npm** or **bun**
+- **Chrome/Chromium** (Remotion uses headless Chrome to render frames)
+
+---
+
+## Setup & Render
 
 ```bash
-npm install
-npx remotion studio     # Preview in browser
-npx remotion render src/index.tsx AITutorReel out/reel.mp4   # Render to MP4
+# 1. Install dependencies
+npm install        # or: bun install
+
+# 2. Preview in browser (interactive studio)
+npm run studio
+
+# 3. Render to MP4
+npm run render
+# → outputs to out/reel.mp4
+
+# 4. Render as GIF (optional, for previews)
+npm run render:gif
+# → outputs to out/reel.gif
 ```
 
-### Render as GIF (for social preview)
-
-```bash
-npx remotion render src/index.tsx AITutorReel out/reel.gif --image-format=png
-```
+The final MP4 at `out/reel.mp4` is ready to upload to Instagram Reels, TikTok, YouTube Shorts, or LinkedIn.
 
 ---
 
@@ -26,61 +41,45 @@ npx remotion render src/index.tsx AITutorReel out/reel.gif --image-format=png
 | -------------- | ------------------ |
 | Resolution     | 1080 × 1920 (9:16) |
 | FPS            | 30                 |
-| Duration       | 30 seconds         |
-| Total Frames   | 900                |
+| Duration       | ~30.5 seconds      |
+| Total Frames   | 915                |
 | Format         | Vertical reel      |
 
 ---
 
 ## Scene Breakdown
 
-| #   | Scene              | Duration | Frames    | Transition In        | Description                                       |
-| --- | ------------------ | -------- | --------- | -------------------- | ------------------------------------------------- |
-| 1   | **Hook**           | 5s       | 0–150     | —                    | "Corporate learning is broken." → strikethrough → "Let's fix that." |
-| 2   | **Problem**        | 7s       | 150–360   | Slide (from bottom)  | Three pain-point cards animate in: static courses, seat-time metrics, no adaptation |
-| 3   | **Product Intro**  | 6s       | 360–540   | Fade                 | Logo reveal + "AI Skill Tutor by Halight" + tagline |
-| 4   | **Features**       | 7s       | 540–750   | Wipe (from left)     | Four feature cards: Dynamic Lessons, Adaptive Mastery, Voice-First, Personalized Paths |
-| 5   | **Skill Graph**    | 4s       | 750–870   | Slide (from right)   | Animated node graph showing Skill → Topics → Lessons |
-| 6   | **CTA**            | 4s       | 870–990   | Fade                 | "Stop teaching. Start assuring." + demo button |
-
----
-
-## Design System
-
-- **Aesthetic**: Dark, cinematic with glowing accents — inspired by product marketing reels from Figma, Linear, and Vercel
-- **Primary accent**: `#00E5A0` (vibrant mint green)
-- **Secondary**: `#7B61FF` (purple), `#FF6B6B` (coral)
-- **Typography**: SF Pro Display system stack
-- **Effects**: Animated mesh gradient backgrounds, grain overlay, floating particles, spring-based text reveals
-
----
-
-## Transitions Used (`@remotion/transitions`)
-
-- `slide({ direction: "from-bottom" })` — Scene 1 → 2
-- `fade()` — Scene 2 → 3, Scene 5 → 6
-- `wipe({ direction: "from-left" })` — Scene 3 → 4
-- `slide({ direction: "from-right" })` — Scene 4 → 5
+| #   | Scene              | Duration | Transition In        | Description                                       |
+| --- | ------------------ | -------- | -------------------- | ------------------------------------------------- |
+| 1   | **Hook**           | 5s       | —                    | "Corporate learning is broken." → strikethrough → "Let's fix that." |
+| 2   | **Problem**        | 7s       | Slide (from bottom)  | Three pain-point cards: static courses, seat-time metrics, no adaptation |
+| 3   | **Product Intro**  | 6s       | Fade                 | Logo reveal + "AI Skill Tutor by Halight" + tagline |
+| 4   | **Features**       | 7s       | Wipe (from left)     | Four feature cards: Dynamic Lessons, Adaptive Mastery, Voice-First, Personalized Paths |
+| 5   | **Skill Graph**    | 4s       | Slide (from right)   | Animated node graph: Skill → Topics → Lessons |
+| 6   | **CTA**            | 4s       | Fade                 | "Stop teaching. Start assuring." + demo button |
 
 ---
 
 ## Customization
 
-### Change duration
-Edit `durationInFrames` per `TransitionSeries.Sequence` in `AITutorReel.tsx`. Total composition duration in `index.tsx`.
+### Colors
+Edit the `COLORS` object at the top of `src/AITutorReel.tsx`.
 
-### Change colors
-Edit the `COLORS` object at the top of `AITutorReel.tsx`.
+### Scene duration
+Adjust `durationInFrames` on each `TransitionSeries.Sequence` in `AITutorReel.tsx`.
+Then update `durationInFrames` in `src/index.tsx` to match the new total:
+**total = sum of all sequence frames − sum of all transition frames**.
 
-### Add audio
+### Add background music
+Place an MP3 in `public/` and add to `AITutorReel`:
 ```tsx
-import { Audio } from "remotion";
-// Add inside AITutorReel component:
+import { Audio, staticFile } from "remotion";
+// Inside the component:
 <Audio src={staticFile("music.mp3")} volume={0.3} />
 ```
 
 ### Add voiceover
-Drop an MP3 into `public/` and add a second `<Audio>` element with volume 1.0.
+Same approach — drop an MP3 and add a second `<Audio>` at full volume.
 
 ---
 
@@ -90,8 +89,20 @@ Drop an MP3 into `public/` and add a second `<Audio>` element with volume 1.0.
 ai-tutor-video/
 ├── package.json
 ├── tsconfig.json
+├── remotion.config.ts     ← CLI entry point config
 ├── README.md
 └── src/
-    ├── index.tsx          # Remotion composition root
-    └── AITutorReel.tsx    # All scenes, transitions, and animations
+    ├── index.tsx           ← Composition registry (RemotionRoot)
+    └── AITutorReel.tsx     ← All scenes, transitions, animations
 ```
+
+---
+
+## Troubleshooting
+
+| Issue | Fix |
+|-------|-----|
+| "Could not find composition" | Make sure `remotion.config.ts` exists and points to `src/index.tsx` |
+| Chrome not found | Install Chromium: `npx remotion browser ensure` |
+| Slow render | Add `--concurrency=4` (or higher) to the render command |
+| Black frames at end | Ensure `durationInFrames` in `index.tsx` matches TransitionSeries math |

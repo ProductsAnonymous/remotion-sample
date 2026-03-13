@@ -5,7 +5,6 @@ import {
   useVideoConfig,
   interpolate,
   spring,
-  Sequence,
   Easing,
 } from "remotion";
 import { linearTiming, TransitionSeries } from "@remotion/transitions";
